@@ -21,6 +21,14 @@ export class InspectorRowComponent {
 
   public onInputChange(e: any) {
     // when <input> is changed, emit an Object up, with what property changed, and to what new value
-    this.onInputChangeEmitter.emit({ prop: this.id, newVal: e.target.value });
+    let newVal = e.target.value;
+    
+    // Convert to number for width and height
+    if (this.id === 'width' || this.id === 'height') {
+      newVal = parseFloat(newVal);
+      if (isNaN(newVal)) return; // Don't emit if not a valid number
+    }
+    
+    this.onInputChangeEmitter.emit({ prop: this.id, newVal: newVal });
   }
 }

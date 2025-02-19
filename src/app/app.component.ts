@@ -5,7 +5,7 @@
  * but your app could use GoJS version 2.3.17, if you don't yet want to upgrade to v3.
  */
 
-import { ChangeDetectorRef, Component, ViewChild, ViewEncapsulation } from '@angular/core';
+import {ChangeDetectorRef, Component, ViewChild, ViewEncapsulation, OnInit, AfterViewInit} from '@angular/core';
 import * as go from 'gojs';
 import {
   DataSyncService,
@@ -30,27 +30,51 @@ import { CommonModule } from '@angular/common';
   ],
   encapsulation: ViewEncapsulation.ShadowDom,
 })
-export class AppComponent {
+export class AppComponent implements OnInit, AfterViewInit {
   @ViewChild('myDiagram', { static: true }) public myDiagramComponent: DiagramComponent;
-  @ViewChild('myPalette', { static: true }) public myPaletteComponent: PaletteComponent;
+  // @ViewChild('myPalette', { static: true }) public myPaletteComponent: PaletteComponent;
 
   // Big object that holds app-level state data
   // As of gojs-angular 2.0, immutability is expected and required of state for ease of change detection.
   // Whenever updating state, immutability must be preserved. It is recommended to use immer for this, a small package that makes working with immutable data easy.
+  // Service for HTTP requests (uncomment when implementing backend)
+  // constructor(private http: HttpClient) {}
+
+  ngOnInit() {
+    this.loadStateFromStorage();
+  }
+
+  private loadStateFromStorage() {
+    const savedState = localStorage.getItem('diagramState');
+    if (savedState) {
+      this.state = JSON.parse(savedState);
+    }
+  }
+
+  private saveStateToStorage() {
+    localStorage.setItem('diagramState', JSON.stringify(this.state));
+
+    // HTTP implementation (uncomment when implementing backend)
+    /*
+    this.http.post('your-api-endpoint/save-diagram', {
+      diagramNodeData: this.state.diagramNodeData,
+      diagramLinkData: this.state.diagramLinkData,
+      diagramModelData: this.state.diagramModelData
+    }).subscribe(
+      response => console.log('Diagram saved successfully', response),
+      error => console.error('Error saving diagram', error)
+    );
+    */
+  }
+
   public state = {
     // Diagram state props
     diagramNodeData: [
-      { key: 'Alpha', text: 'Alpha', color: 'lightblue', loc: '0 0' },
-      { key: 'Beta', text: 'Beta', color: 'orange', loc: '150 0' },
-      { key: 'Gamma', text: 'Gamma', color: 'lightgreen', loc: '0 100' },
-      { key: 'Delta', text: 'Delta', color: 'pink', loc: '100 100' },
+      { key: 'A', text: 'A', color: 'lightblue', loc: '0 0', width: 100, height: 60 },
+      { key: 'B', text: 'B', color: 'orange', loc: '200 -100', width: 100, height: 60 },
     ],
     diagramLinkData: [
-      { key: -1, from: 'Alpha', to: 'Beta', fromPort: 'r', toPort: 'l' },
-      { key: -2, from: 'Alpha', to: 'Gamma', fromPort: 'b', toPort: 't' },
-      { key: -3, from: 'Beta', to: 'Beta' },
-      { key: -4, from: 'Gamma', to: 'Delta', fromPort: 'r', toPort: 'l' },
-      { key: -5, from: 'Delta', to: 'Alpha', fromPort: 't', toPort: 'r' },
+      { key: -1, from: 'A', to: 'B', fromPort: 'r', toPort: 'l' },
     ],
     diagramModelData: { prop: 'value' },
     skipsDiagramUpdate: false,
@@ -58,8 +82,8 @@ export class AppComponent {
 
     // Palette state props
     paletteNodeData: [
-      { key: 'Epsilon', text: 'Epsilon', color: 'moccasin' },
-      { key: 'Kappa', text: 'Kappa', color: 'lavender' },
+      { key: 'Epsilon', text: 'Epsilon', color: 'moccasin', width: 100, height: 60 },
+      { key: 'Kappa', text: 'Kappa', color: 'lavender', width: 100, height: 60 },
     ],
     paletteModelData: { prop: 'val' },
   };
@@ -110,7 +134,7 @@ export class AppComponent {
       .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringifyFixed(1))
       .add(
         new go.Panel('Auto').add(
-          new go.Shape('RoundedRectangle', { strokeWidth: 0.5 }).bind('fill', 'color'),
+          new go.Shape('Rectangle', { strokeWidth: 0.5 }).bind('fill', 'color').bind('width').bind('height'),
           new go.TextBlock({ margin: 8, editable: true }).bindTwoWay('text')
         ),
         // Ports
@@ -121,7 +145,7 @@ export class AppComponent {
       );
 
     diagram.linkTemplate = new go.Link({
-      curve: go.Curve.Bezier,
+      routing: go.Routing.AvoidsNodes,
       fromEndSegmentLength: 30,
       toEndSegmentLength: 30,
     }).add(new go.Shape({ strokeWidth: 1.5 }), new go.Shape({ toArrow: 'Standard' }));
@@ -167,7 +191,7 @@ export class AppComponent {
     const palette = new go.Palette();
     // define a simpler Node template than the one used by the main Diagram
     palette.nodeTemplate = new go.Node('Auto').add(
-      new go.Shape('RoundedRectangle', { strokeWidth: 0.5 }).bind('fill', 'color'),
+      new go.Shape('Rectangle', { strokeWidth: 0.5 }).bind('fill', 'color').bind('width').bind('height'),
       new go.TextBlock({ margin: 8 }).bind('text')
     );
     return palette;
@@ -228,4 +252,19 @@ export class AppComponent {
       }
     });
   }
+
+  public saveToStorage(): void {
+    this.saveStateToStorage();
+  }
+
+  public addNode(): void {
+    const newKey = 'Node' + (this.state.diagramNodeData.length + 1);
+    const newNode = { key: newKey, text: newKey, color: 'lightblue', loc: '-300 -300', width: 100, height: 60 };
+
+    this.state = produce(this.state, (draft) => {
+      draft.diagramNodeData.push(newNode);
+      draft.skipsDiagramUpdate = false;
+    });
+  }
+
 }

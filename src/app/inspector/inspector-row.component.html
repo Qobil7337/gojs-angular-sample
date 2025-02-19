@@ -3,6 +3,8 @@
   <input
     (change)="onInputChange($event)"
     [ngModel]="value"
+    [type]="id === 'width' || id === 'height' ? 'number' : 'text'"
+    [step]="id === 'width' || id === 'height' ? '1' : null"
   />
 </td>
 
