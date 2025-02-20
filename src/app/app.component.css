@@ -73,3 +73,62 @@ body {
   clear: both;
 }
 
+.diagram-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+}
+
+.diagram {
+  width: 800px;
+  height: 500px;
+  border: 1px solid #ccc;
+}
+
+.button-container {
+  margin: 10px 0;
+}
+
+.button-container button {
+  margin-right: 10px;
+  padding: 8px 16px;
+  cursor: pointer;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+}
+
+.button-container button:hover {
+  background-color: #45a049;
+}
+
+.inspector {
+  width: 200px;
+  padding: 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+}
+
+.inspector h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+.inspector div {
+  margin-bottom: 10px;
+}
+
+.inspector label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.inspector input {
+  width: 100%;
+  padding: 5px;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+}

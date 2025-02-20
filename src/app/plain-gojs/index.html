@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>GoJS Sample</title>
+    <script src="https://unpkg.com/gojs/release/go.js"></script>
+    <style>
+        .diagram-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        #myDiagramDiv {
+            width: 800px;
+            height: 500px;
+            border: 1px solid black;
+        }
+        .button-container {
+            margin: 10px 0;
+        }
+        .button-container button {
+            margin-right: 10px;
+            padding: 5px 15px;
+            cursor: pointer;
+        }
+        #inspector {
+            width: 200px;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <h1>GoJS Sample</h1>
+    <div class="diagram-container">
+        <div id="myDiagramDiv"></div>
+        <div class="button-container">
+            <button onclick="addNode()">+</button>
+            <button onclick="save()">Save</button>
+        </div>
+        <div id="inspector">
+            <h3>Inspector</h3>
+            <div id="inspectorProps"></div>
+        </div>
+    </div>
+    <script src="diagram.js"></script>
+</body>
+</html>
